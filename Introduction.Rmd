@@ -1,0 +1,634 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+<h1>An Introduction to Statistical Learning</h1>
+<h2>2.3 Lab: Introduction to R </h2>
+<h3>Basic Commands</h3>
+Create a vector:
+```{r}
+x <- c(1,3,5,7)
+x
+```
+Compute the length using the function `length()`:
+```{r}
+length(x)
+```
+```{r}
+y <- c(2, 4, 6, 8)
+```
+
+```{r}
+y
+```
+
+The `ls()` function allow us to look at a list of all of the objects, such as data and functions, that we have saved so far:
+```{r}
+ls()
+```
+The `rm()` function can be used to delete any that we don't want:
+```{r}
+rm(y)
+```
+The `matrix()` function takes a number of inputs:
+```{r}
+A <- matrix(data=c(1, 2, 3, 4), nrow=2, ncol=2)
+```
+```{r}
+A
+```
+Note that we could just as well omit typing `data=`, `nrow=` and `ncol=` in the `matrix()` command above: that is, we could just type:
+```{r}
+B <- matrix(c(1, 2, 3, 4), 2, 2)
+```
+```{r}
+B
+```
+As the example illustrates, by default `R` creates matrices by successively filling in columns. Alternatively, the `byrow=TRUE` option can be used to populate the matrix in order of the rows.
+```{r}
+matrix(c(1, 2, 3, 4), 2, 2, byrow=TRUE)
+```
+The `sqrt()` function returns the square root of each element of a vector or matrix.
+```{r}
+sqrt(A)
+```
+The command `x^2` raises each element of x to the power `2`, any powers are possible, including fractional or negative powers.
+```{r}
+A^2
+```
+The `rnorm()` function generates a vector of random normal variables, with first argument `n` the sample size.
+Each time we call this function, we will get a different answer.
+
+Here we create two correlated sets of number, `x` and `y`, and use the `cor()` function to compute the correlation between them.
+```{r}
+x = rnorm(50)
+```
+```{r}
+y = x + rnorm(50, mean=50, sd=0.1)
+```
+```{r}
+cor(x, y)
+```
+By default, `rnorm()` creates standard normal random variable with a `mean=0` and a `standard deviation = 1`.
+However, the mean and standard deviation can be altered using `mean` and `sd` arguments.
+
+Sometimes, we want our code to reproduce the exact same set of random numbers, we can usee the `set_seed()` function to do this. The `set_seed()` function takes an (arbitrary) integer argument.
+```{r}
+set.seed(1303)
+```
+```{r}
+rnorm(50)
+```
+The `mean()` and `var()` functions can be used to compute the mean and variance of a vector of numbers. Applying `sqrt()` to the output of `var()` will give the standard deviation. Or we can simply use the `sd()` function.
+```{r}
+set.seed(3)
+```
+```{r}
+y <- rnorm(50)
+```
+```{r}
+mean(y)
+```
+```{r}
+var(y)
+```
+```{r}
+sqrt(var(y))
+```
+```{r}
+sd(y)
+```
+<h3>Graphics</h3>
+
+The `plot()` function is the primary way to plot data in `R`. For instance, `plor(x,y)` produces a scatter plot of the numbers in `x` versus the numbers in `y`.
+There are many additional options that can be passed in to the `plot()` function. For example, passing in the argument `xlab` will result in a label on the $x-axis$. 
+```{r}
+x <- rnorm(100)
+```
+```{r}
+y <- rnorm(100)
+```
+```{r}
+plot(x,y)
+```
+```{r}
+plot(x, y, xlab='x-axis', ylab='y-axis', main = 'Plot of X vs Y')
+```
+The function `seq()` can be used to create a sequence of numbers. For instance, `seq(a, b)` makes a vector of integers between `a` and `b`. There are many other options: for instances, `seq(0, 1, length = 10)` makes a sequence of `10` numbers that are equally spaced between `0` and `1`.
+```{r}
+seq(0, 1, length=10)
+```
+Typing `3:11` is a shorthand for `seq(3, 11)` for integers arguments
+```{r}
+3:11
+```
+```{r}
+x <- seq(-pi, pi, length = 200)
+```
+We will now create some more sophisticated plots. The `contour()` functions produces a **contour plot** in order to represent three-dimensional data; it is like a topographical map. It takes three arguments:
+
+* A vector of the `x` values (the first dimension)
+* A vector of the `y` values (the second dimension)
+* A matrix whose elements correspond to the `z` value (the third dimension) for each pair of (`x`, `y`) coordinates.
+```{r}
+y = x
+```
+```{r}
+f = outer(x, y, function(x, y) cos(y) / (1 + x^2))
+```
+```{r}
+contour(x, y, f)
+```
+```{r}
+contour(x, y, f, nlevels = 45)
+```
+```{r}
+fa <- (f - t(f))/2
+```
+```{r}
+contour(x, y, fa, nlevels = 15)
+```
+The `image()` function works the same way as `contour()`, except that it produces a color-coded plot whose colors depend on the `z` value. This is known as a **heatmap**, and is sometimes used to plot temperature in weather forecast.
+```{r}
+image(x, y, fa)
+```
+Alternatively, `perps()` can be used to produce a three-dimensional plot. The arguments `theta` and `phi` control the angles at which the plot is viewed.
+```{r}
+persp(x, y, fa)
+```
+```{r}
+persp(x, y, fa, theta=30)
+```
+```{r}
+persp(x, y, fa, theta=30, phi=20)
+```
+<h3>Indexing Data</h3>
+
+We often wish to examine part of a set of data. Suppose that our data is stored in the matrix `A`.
+```{r}
+A <- matrix(1:16, 4, 4)
+```
+```{r}
+A
+```
+Then typing `A[2, 3]` will select the element corresponding to the second row and the third column.
+```{r}
+A[2, 3]
+```
+The first number after the open-bracket symbol `[` always refers to the row, and the second number always refer to the column. We can also select multiple rows and columns at a time, by providing vectors as the indices.
+```{r}
+A[c(1, 3), c(2, 4)]
+```
+```{r}
+A[1:3, 2:4]
+```
+```{r}
+A[1:2, ]
+```
+```{r}
+A[, 1:2]
+```
+```{r}
+A[1, ]
+```
+The use of a negative sign `-` in the index tells `R` to keep all rows or columns except those indicated in the index.
+```{r}
+A[-c(1, 3), ]
+```
+The `dim()` functions outputs the number of rows followed by the number of columns of a given matrix.
+```{r}
+dim(A)
+```
+<h3>Loading Data</h3>
+
+We begin by loading in the `Auto` data set. This data is part of the `ISLR` library but to illustrate `data()` function will load it.
+```{r}
+library(ISLR)
+```
+```{r}
+data("Auto")
+```
+```{r}
+head(Auto)
+```
+The `dim()` function tell us that the data has 397 observations, or rows, and nine variables, or columns
+```{r}
+dim(Auto)
+```
+We can use `names()` to check the variable names.
+```{r}
+names(Auto)
+```
+<h3>Additional Graphical and Numerical Summaries</h3>
+
+We can use the `plot()` function to produce **scatterplots** of the quantitative variables. However, simply typing the variable names will produce an error message, because `R` does not know to look in the `Auto` data set for those variables.
+
+To refer to a variable, we must type the data set and the variable name joined with a `$` symbol. Alternatively, we can use the `attach()`  function in order to tell `R` to make the variables in this data frame available by name.
+```{r}
+plot(Auto$cylinders, Auto$mpg)
+```
+```{r}
+attach(Auto)
+```
+```{r}
+plot(cylinders, mpg)
+```
+The `cylinders` variable is stored as a numeric vector, `R` has treated it as quantitative. However, since there are only a small number of possible values for `cylinders`, one may prefer to treat it as a qualitative variable.
+
+The `as,factor()` function converts quantitative variables into qualitative variables.
+```{r}
+cylinders <- as.factor(cylinders)
+```
+If the variable plotted on the $x-axis$ is categorical, then **boxplots** will automatically be produced by the `plot()` function.
+```{r}
+plot(cylinders, mpg)
+```
+```{r}
+plot(cylinders, mpg, col='red')
+```
+
+
+```{r}
+plot(cylinders, mpg, col='red', varwidth=T)
+```
+```{r}
+plot(cylinders, mpg, col='red', varwidth=T, horizontal = T)
+
+```
+```{r}
+plot(cylinders, mpg, col='red', varwidth=T, xlab='cylinders', ylab='MPG')
+```
+The `hist()` function can be used to plot a **histogram**. Note that `col=2` has the same effect as `col=red`
+```{r}
+hist(mpg)
+```
+```{r}
+hist(mpg, col=2)
+```
+```{r}
+hist(mpg, col=3, breaks=15)
+```
+The `pairs()` function creates a **scatterplot matrix** for every pair of variables for any given data set. We can also produce scatterplots for just a subset of the variables.
+```{r}
+pairs(Auto)
+```
+```{r}
+pairs(~mpg + displacement + horsepower + weight + acceleration, Auto)
+```
+In conjunction with the `plot()` function, `identify()` provides a useful interactive method for identifying the value for a particular variable for points on a plot. We pass in three arguments to `identify():` the $x-axis$ variable, the $y-axis$ variable, and the variable whose values we would like to see printed for each point. The clicking on a given point in the plot will cause `R` to print the value of the variable of interest.
+
+Right-clicking on the plot will exit the `identify()` function. The numbers printed under `identify()` function correspond to the rows for the selected points.
+
+```{r}
+{plot(horsepower, mpg);
+identify(horsepower, mpg, name)}
+```
+The `summary()` function produces a numerical summary of each variable in a particular data set.
+```{r}
+summary(Auto)
+```
+We can also produce a summary of just a single variable.
+```{r}
+summary(mpg)
+```
+<h3>Applied</h3>
+
+This exercise relates to the `College` data set, which can be found in the file `College.csv`. It contains a number of variable for 777 different universities and colleges in the US. The variable are:
+
+* `Private`: Public/private indicator
+* `Apps`: Number of applications received
+* `Accept`: Number of applicants accepted
+* `Enroll`: Number of new students enrolled
+* `Top10perc`: New students from top 10% of high school class
+* `Top25perc`: New students from top 25% of high school class
+* `F.Undergrad`: Number of full-time undergraduates
+* `P.Undergrad`: Number of part-time undergraduates
+* `Outstate`: Out-of-state tuition
+* `Room.Board`: Room and board costs
+* `Books`: Estimated book costs
+* `Personal`: Estimated personal spending
+* `PhD`: Percent of faculty with Ph.D.'s
+* `Terminal`: Percent of faculty with terminal degree
+* `S.F Ratio`: Student/faculty ratio
+* `perc.alumni`: Percent of alumni who donate
+* `Expend`: Instructional expenditure per student
+* `Grad.Rate`: Graduation rate
+
+```{r}
+College = read.csv('College.csv', header = T, na.strings = '?')
+```
+Let's to save the `rownames` column into another variable
+```{r}
+rownames(College)= College[,1]
+```
+```{r}
+fix(College)
+```
+```{r}
+College=College[,-1]
+```
+```{r}
+fix(College)
+```
+Use the `summary()` function to produce a numerical summary of the variables in the data set
+```{r}
+attach(College)
+
+```
+```{r}
+summary(College)
+```
+Use the `pairs()` function to produce a scatterplot matrix of the first ten columns or variables of the data. Recall that you can reference the first ten columns of a matrix `A` using `A[, 1:10]`.
+```{r}
+Private <- as.factor(Private)
+```
+
+
+```{r}
+pairs(College[, 2:11])
+```
+Use the `plot()` function to produce side-by-side boxplots of `Outstate` vs `Private`
+```{r}
+plot(Private, Outstate, col=5, varwidth=T, xlab = 'Private', ylab = 'Outstate')
+```
+Create a new qualitative variable, called `Elite`, by **binning** the `Top10perc` variable. We are going to divide universities into two groups based on whether or not the proportion of students coming from the top 10% of their high school classes exceeds 50%.
+```{r}
+Elite <- rep('No', nrow(College))
+```
+```{r}
+Elite[Top10perc > 50] = 'Yes'
+```
+```{r}
+College <- data.frame(College, Elite)
+```
+```{r}
+College$Elite <- as.factor(College$Elite)
+```
+```{r}
+detach(College)
+```
+```{r}
+College$Private <- as.factor(College$Private)
+```
+```{r}
+rm(Private)
+```
+```{r}
+rm(Elite)
+```
+```{r}
+attach(College)
+```
+Use the `summary()` function to see how many elite universities there are.
+```{r}
+summary(Elite)
+```
+Now use `plot()` function to produce side-by-side boxplots of `Outstate` versus `Elite`. 
+```{r}
+plot(Elite, Outstate, col=7, head=T, xlab='Elite', ylab='Outstate')
+```
+Use the `hist()` function to produce some histograms with different number of bins for a few quantitatives variables. You may find the command `par(mfrow=c(2,2))` useful: it will divide the print window into four regions so that four plots can be made simultaneously.
+
+```{r}
+hist(Grad.Rate, col=3, breaks = 20)
+```
+```{r}
+hist(PhD, col=7, breaks=20)
+```
+```{r}
+hist(F.Undergrad, col=12, breaks=20)
+```
+```{r}
+hist(P.Undergrad, col=15, breaks=20)
+```
+```{r}
+hist(Books, col=18, breaks=20)
+```
+This exercise involves the `Auto` data set studied in the lab. Make sure that the missing values have been removed from the data.
+```{r}
+data("Auto")
+```
+```{r}
+Auto = na.omit(Auto)
+```
+```{r}
+dim(Auto)
+```
+a) Which of the predictors are quantitative, and which are qualitative?
+```{r}
+head(Auto)
+```
+The `str()` function show us the data type of each column in a data frame. However some columns could be categorical(qualitative) even though they have numeric data.
+```{r}
+str(Auto)
+```
+We can use the function `unique()` do determine which predictors we can consider as qualitative or categorical.
+```{r}
+apply(Auto, 2, unique)
+```
+As we can see not only the predictor name but also predictors as cylinders, origin and year we could consider as qualitative.
+
+b) What is the **range** of each quantitative predictor? You can answer this using the `range()` function.
+```{r}
+attach(Auto)
+```
+
+For `mpg` predictor.
+```{r}
+range(mpg)
+```
+For `displacement` predictor
+```{r}
+range(displacement)
+```
+For `horsepower` predictor.
+```{r}
+range(horsepower)
+```
+For `weight` predictor. 
+```{r}
+range(weight)
+```
+For `acceleration` predictor.
+```{r}
+range(acceleration)
+```
+c) What is the mean and standard deviation of each quantitative?
+
+```{r}
+Auto$cylinders <- as.factor(Auto$cylinders)
+```
+```{r}
+Auto$year <- as.factor(Auto$year)
+```
+```{r}
+Auto$origin <- as.factor(Auto$origin)
+```
+Let's save in `qualitativeNames` predictors names that are factors
+```{r}
+qualitativeNames <- names(Auto)[sapply(Auto, is.factor)]
+```
+Also in `quantitativeNames` the predictors names of numeric type will be saved.
+```{r}
+quantitativeNames <- names(Auto)[sapply(Auto, is.numeric)]
+```
+Now we can compute the mean with the `mean()` function
+```{r}
+sapply(Auto[, quantitativeNames], mean)
+```
+And compute the standard deviation by using `sd()` function
+```{r}
+sapply(Auto[, quantitativeNames],sd)
+```
+d) Now remove the 10th through 85th observations. What is the range, mean, and standard deviation of each predictor in the subset of the data that remains.
+```{r}
+subset <- Auto[-seq(10, 84), ]
+```
+The range:
+```{r}
+sapply(subset[, quantitativeNames], range)
+```
+The mean:
+```{r}
+sapply(subset[, quantitativeNames], mean)
+```
+The standard deviation:
+```{r}
+sapply(subset[, quantitativeNames], sd)
+```
+e) Using the full data set, investigate the predictors graphically, using **scatterplots** or other tools of your choice. Create some plots highlighting the relationships among the predictors. Comment on your findings.
+
+<h3> Quantitative predictors </h3>
+<h4>Displacement vs MPG Scatterplot</h4>
+```{r}
+plot(displacement, mpg, col=2, pch=20)
+```
+<h4>Horsepower vs MPG Scatterplot</h4>
+```{r}
+plot(horsepower, mpg, col=3, pch=20)
+```
+<h4>Weight vs MPG Scatterplot</h4>
+```{r}
+plot(weight, mpg, col=5, pch=20)
+```
+<h4>Acceleration vs MPG Scatterplot</h4>
+```{r}
+plot(acceleration, mpg, col=8, pch=20)
+```
+<h3>Qualitative predictors</h3>
+<h4>Cylinder Histogram</h4>
+```{r}
+hist(cylinders, col=4)
+```
+<h4>Year Histogram</h4>
+```{r}
+hist(year, col=3)
+```
+<h4>Origin histogram</h4>
+```{r}
+hist(origin, col=5)
+```
+This exercise involves the `Boston` housing data set.
+
+a)To begin, load in the `Boston` data set. The `Boston` data set is part of the `MASS` **library** in `R`.
+```{r}
+library(MASS)
+```
+Now the data set is contained in the object `Boston`.
+```{r}
+Boston
+```
+Read about the data set
+```{r}
+?Boston
+```
+b) Make some pairwise scatterplots of the predictors (columns) in this data set
+```{r}
+data("Boston")
+```
+```{r}
+a <- 1:6
+```
+```{r}
+pairs(Boston[, a])
+```
+
+```{r}
+b <- append(7:10, 1, after = F)
+```
+```{r}
+pairs(Boston[, b])
+```
+```{r}
+c <- append(11:14, 1, after=F)
+```
+```{r}
+pairs(Boston[, c])
+```
+Now let's have a look about the data in this data set, whether there are some qualitative predictors and which are. 
+```{r}
+numberUniqueValues = sapply(apply(Boston, 2, unique), FUN = length)
+```
+```{r}
+numberUniqueValues
+```
+As we can see, some candidates that can be used as qualitative predictors are `rad`` and `chas`, even `zn` but this last one will depend directly of capacity computing we have.
+```{r}
+Boston$chas <- as.factor(Boston$chas)
+```
+```{r}
+Boston$rad <- as.factor(Boston$rad)
+```
+How many of the subsets in this data set bound the Charles river (1 if tract bounds river, 0 otherwise)?
+```{r}
+summary(Boston$chas)
+```
+What is the median pupil-teacher ratio among the towns in this data set?
+```{r}
+median(Boston$ptratio)
+```
+Which suburb of Boston has lowest median value of owners occupied homes? What are the values of the other predictors for that suburb, and how do those values compare to the overall ranges for those predictors?
+```{r}
+indexMinmedv <- which.min(Boston$medv)
+```
+```{r}
+Boston[indexMinmedv, ]
+```
+We can create an array to save the ranges for each predictor from this data set.
+```{r}
+ranges <- sapply(Boston, function(x){
+    if(is.numeric(x)){
+        range(x)}
+})
+```
+```{r}
+ranges <- ranges[!sapply(ranges, is.null)]
+```
+Now, let's to create a new variable called `quantitativeNames` where we will save each quantitative predictor
+```{r}
+quantitativeNames <- names(ranges)
+```
+```{r}
+ranges$medv[2]
+```
+
+
+```{r}
+for(name in quantitativeNames){
+    
+    predictor <- Boston[indexMinmedv,name]
+    limInf <- ranges[[name]][1]
+    limSup <- ranges[[name]][2]
+    cat("The predictor value is:",predictor,"and the range is:",limInf,"-",limSup,"\n")
+    }
+```
+In this data set, how many of the suburbs average more than seven rooms per dwelling? More than eight per dwelling?
+
+For the suburbs with an average more than seven rooms per dwelling:
+```{r}
+length(which(Boston$rm > 7))
+```
+For the suburbs with an average more than eigth rooms per dwelling:
+```{r}
+length(which(Boston$rm > 8))
+```
