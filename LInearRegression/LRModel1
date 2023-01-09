@@ -1,0 +1,82 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Simple Linear Regression
+
+In this example, we will perform a linear regression model on the `Auto` data set from the `ISLR2` package.
+
+Let's start by importing the package and data from this package.
+```{r}
+library(ISLR2)
+```
+```{r}
+data("Auto")
+```
+
+Now, with the function `head()` we can have a look at the `Auto` data set.
+```{r}
+attach(Auto)
+```
+```{r}
+head(Auto)
+```
+In this example, we are going to fit the `mpg` values with the `horsepower` as a predictor. First we can start with a scatter plot in order visualize the behavior of these data.
+```{r}
+plot(horsepower, mpg, col='red', pch=20)
+```
+
+**Is there a relationship between the predictor and the response?**
+
+As we can see, there is a relationship between the predictor (horsepower) and the response(miles per gallon).
+
+The function `lm()` help us to perform the linear regression model, with the following syntax:
+
+* X the predictor
+* Y the response
+* `lm(Y ~ x)`
+```{r}
+LRM <- lm(mpg ~ horsepower)
+```
+The `summary()` function show us the results obtained from the linear regression model (coefficients, residuals, p-values, etc).
+```{r}
+summary(LRM)
+```
+**How strong is the relationship between the predictor and the response?**
+
+The `p-value` of the horsepower is zero, so this is evidence that there is a strong relationship between the predictor and the response. 
+
+**Is the relationship between the predictor and the response positive or negative?**
+
+This relationship is negative, because as the `horsepower` increase, the 
+`mpg` decrease, this is conclude based in the horsepower coefficient sign.
+
+**What is the predicted `mpg` associated with a horsepower of 98?**
+
+We use the `predict()` function to compute the prediction value once we have the regression model for given set of predictor values.
+```{r}
+predict(LRM, data.frame(horsepower = 98))
+```
+The predicted value for `mpg` associated with a `horsepower = 98` is `24.46708`.
+
+**What are the associated 95% confidence and prediction intervals?**
+
+To compute this intervals we use again the `predict()` function, but in this case we need to add the `interval` parameter, and the `level` parameter.
+```{r}
+predict(LRM, data.frame(horsepower = 98), level = 0.95, interval = 'confidence')
+```
+```{r}
+predict(LRM, data.frame(horsepower = 98), level = 0.95, interval = 'prediction')
+```
+As expected, both interval are centered around the same point (`mpg = 24.46708`), but the prediction interval is wider.
+
+To show the sample values and the linear regression model we can type the following lines of code.
+```{r}
+plot(horsepower, mpg, col = 'red', pch = 20) +
+abline(LRM, lwd = 3)
+```
+Also the `plot()` function show us some plots from the linear regression model.
+```{r}
+plot(LRM)
+```
